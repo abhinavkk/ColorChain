@@ -115,6 +115,7 @@ function boxcolor(item, pointer) {
 		player2 += check(item);
 		text2.text = "Player 2 = " + player2;
 		count_moves++;
+		if(count_moves === 100)
 		{
 			if(player1 > player2)
 				setTimeout(function(){alert('Player 1 wins!')},500);
