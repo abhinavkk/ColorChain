@@ -14,13 +14,22 @@ var text;
 var x;
 var y;
 var turn = 1;
-var cnt = 0;
+var player1 = 0;
+var player2 = 0;
+var text1;
+var text2;
+var count_moves = 0;
 
 function create() {
 	game.stage.background = 0x5d5d5d;
 
 	tiles = game.add.group();
-
+	text1 = game.add.text(800, 200, "Player 1 = 0", { font: "65px Arial", fill: "#ff0044", align: "center" });
+	text2 = game.add.text(800, 400, "Player 2 = 0", { font: "65px Arial", fill: "#ff0044", align: "center" });
+	text1.anchor.set(0.5);
+	text2.anchor.set(0.5);
+	text1.inputEnabled = true;
+	text2.inputEnabled = true;
 	for(x = 0; x < 10; x++)
 	{
 		for(y = 0; y < 10; y++)
@@ -56,14 +65,27 @@ function countSameColorTiles(startTile, moveX, moveY) {
 	}
 	return count;
 }
+function getTileColor(tile) {
+	return tile.frame;
+}
+function getTile(posX, posY) {
+	return tiles.iterate("id", calcTileId(posX, posY), Phaser.Group.RETURN_CHILD);
+}
 function check(tile) {
-	var countUp = countSameColorTiles(gem, 0, -1);
-	var countDown = countSameColorTiles(gem, 0, 1);
-	var countLeft = countSameColorTiles(gem, -1, 0);
-	var countRight = countSameColorTiles(gem, 1, 0);
+	var countUp = countSameColorTiles(tile, 0, -1);
+	var countDown = countSameColorTiles(tile, 0, 1);
+	var countLeft = countSameColorTiles(tile, -1, 0);
+	var countRight = countSameColorTiles(tile, 1, 0);
 	
 	var countHoriz = countLeft + countRight + 1;
 	var countVert = countUp + countDown + 1;
+	var points = 0;
+
+	if(countHoriz >= 3)
+		points += countHoriz;
+	else if (countVert >= 3)
+		points += countVert;
+	return points;
 }
 function boxcolor(item, pointer) {
 	if(turn == 1)
@@ -71,19 +93,18 @@ function boxcolor(item, pointer) {
 		item.frame = 1;
 		turn = 0;
 		item.inputEnabled = false;
-		check(item);
-		// cnt = 0;
-		// check_horizontal_left(item.position.x);
-		// check_horizontal_right(item.position.x);
-		// cnt = 0;
-		// check_vertical_up(item.position.y);
-		// check_vertical_down(item.position.y);
-		// cnt = 0;
-		// check_diagonal_prim_up(item.position.x, item.poistion.y);
-		// check_diagonal_prim_down(item.position.x, item.position.y);
-		// cnt = 0;
-		// check_diagonal_notprim_up(item.position.x, item.position.y);
-		// check_diagonal_notprim_down(item.position.x, item.position.y);
+		player1 += check(item);
+		text1.text = "Player 1 = " + player1;
+		count_moves++;
+		if(count_moves === 100)
+		{
+			if(player1 > player2)
+				setTimeout(function(){alert('Player 1 wins!')},500);
+			else if(player1 < player2)
+				setTimeout(function(){alert('Player 2 wins!')},500)
+			else
+				setTimeout(function(){alert('Match Drawn!')},500)
+		}
 		return;
 	}
 	if(turn == 0)
@@ -91,22 +112,18 @@ function boxcolor(item, pointer) {
 		item.frame = 2;
 		turn = 1;
 		item.inputEnabled = false;
-		check(item);
-		// cnt = 0;
-		// check_horizontal_left(item.position.x);
-		// check_horizontal_right(item.position.x);
-		// cnt = 0;
-		// check_vertical_up(item.position.y);
-		// check_vertical_down(item.position.y);
-		// cnt = 0;
-		// check_diagonal_prim_up(item.position.x, item.poistion.y);
-		// check_diagonal_prim_down(item.position.x, item.position.y);
-		// cnt = 0;
-		// check_diagonal_notprim_up(item.position.x, item.position.y);
-		// check_diagonal_notprim_down(item.position.x, item.position.y);
+		player2 += check(item);
+		text2.text = "Player 2 = " + player2;
+		count_moves++;
+		{
+			if(player1 > player2)
+				setTimeout(function(){alert('Player 1 wins!')},500);
+			else if(player1 < player2)
+				setTimeout(function(){alert('Player 2 wins!')},500)
+			else
+				setTimeout(function(){alert('Match Drawn!')},500)
+		}
 		return;
 	}
 }
-// function check_horizontal_left() {
-// 	if()
-// }
+
